@@ -1,21 +1,10 @@
-import random, time, pygame, sys, copy
-from pygame.locals import *
-from time import sleep
+import pygame
 
-FPS = 30 # frames per second to update the screen
+BOARDWIDTH = 64  # how many columns in the board
+BOARDHEIGHT = 64  # how many rows in the board
+SQUARESIZE = 16  # width & height of each space in pixels
 
-BOARDWIDTH = 64 # how many columns in the board
-BOARDHEIGHT = 64 # how many rows in the board
-SQUARESIZE = 16 # width & height of each space in pixels
-
-PURPLE    = (255,   0, 255)
-LIGHTBLUE = (170, 190, 255)
-BLUE      = (  0,   0, 255)
-RED       = (255, 100, 100)
-BLACK     = (  0,   0,   0)
-BROWN     = ( 85,  65,   0)
-
-GRIDCOLOR = BLUE # color of the game board
+GRIDCOLOR = (0, 0, 255)
 
 
 # constants for direction values
@@ -37,7 +26,7 @@ board = 0
 
 
 def main():
-    global FPSCLOCK, DISPLAYSURF, GEMIMAGES, GAMESOUNDS, BASICFONT, BOARDRECTS
+    global FPSCLOCK, DISPLAYSURF, BASICFONT, BOARDRECTS
     # Initial set up.
 
     pygame.init()
@@ -59,12 +48,12 @@ def main():
 
     global gameBoards
     global board
-    gameBoards = [getBlankBoard(), getBlankBoard()]
+    gameBoards = [get_blank_board(), get_blank_board()]
 
-    DISPLAYSURF.fill(BLACK)
+    DISPLAYSURF.fill((0, 0, 0))
 
     while True:
-        drawBoard()
+        draw_board()
 
         bb = (board + 1) % len(gameBoards)
 
@@ -72,26 +61,24 @@ def main():
             for y in xrange(BOARDHEIGHT):
                 gameBoards[bb][x][y] = rules(x, y)
 
-        # for x in xrange(BOARDWIDTH):
-        #     for y in xrange(BOARDHEIGHT):
-        #         gameBoards[board][x][y] = 0
-
         board = bb
 
+        FPSCLOCK.tick(30)
 
-def getBlankBoard():
+
+def get_blank_board():
     # Create and return a blank board data structure.
-    board = []
+    the_board = []
 
     for x in range(BOARDWIDTH):
-        board.append([0] * BOARDHEIGHT)
+        the_board.append([0] * BOARDHEIGHT)
 
-    board[10][10] = 1
-    board[11][10] = 1
-    board[12][10] = 1
-    board[12][9] = 1
-    board[11][8] = 1
-    return board
+    the_board[10][10] = 1
+    the_board[11][10] = 1
+    the_board[12][10] = 1
+    the_board[12][9] = 1
+    the_board[11][8] = 1
+    return the_board
 
 
 def count_neighbours(x, y):
@@ -113,26 +100,20 @@ def rules(x, y):
     value = gameBoards[board][x][y]
     count = count_neighbours(x, y)
 
-    if value == 1 and count == 2:
-        if count == 2:
-            return 1
-
-    if count == 3:
+    if (value == 1 and count == 2) or count == 3:
         return 1
 
     return 0
 
 
-def drawBoard():
+def draw_board():
     for x in xrange(BOARDWIDTH):
         for y in xrange(BOARDHEIGHT):
-            gemToDraw = gameBoards[board][x][y]
 
-            if gemToDraw == 1:
-                DISPLAYSURF.fill(RED, BOARDRECTS[x][y])
+            if gameBoards[board][x][y] == 1:
+                DISPLAYSURF.fill((255, 0, 0), BOARDRECTS[x][y])
             else:
-                DISPLAYSURF.fill(BLACK, BOARDRECTS[x][y])
-                #    DISPLAYSURF.blit(GEMIMAGES[gemToDraw], BOARDRECTS[x][y])
+                DISPLAYSURF.fill((0, 0, 0), BOARDRECTS[x][y])
 
             pygame.draw.rect(DISPLAYSURF, (128, 128, 128), BOARDRECTS[x][y], 1)
 
